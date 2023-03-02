@@ -1,5 +1,5 @@
 # Algoritmi
-°-°
+Gruppo 4
 
 Compile command 
 > g++ -O3 -o mmkp -I . *.cpp -lm
