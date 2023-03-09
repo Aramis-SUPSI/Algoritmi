@@ -13,43 +13,43 @@ int data::read_input(const string& instance) {
     cout << "Read instance: " << instance << " ";
 
     fstream newfile;
-    newfile.open(instance, ios::in);
-    if (newfile.is_open()) {
+    newfile.open(instance, ios::in); // apre file
+    if (newfile.is_open()) { // se è aperto
         string line;
-        getline(newfile, line);
-        istringstream sizes(line);
-        sizes >> nclasses >> nresources;
+        getline(newfile, line); // leggi linea
+        istringstream sizes(line); // size = 100 | 10
+        sizes >> nclasses >> nresources; // attribuisce i valori 100 e 10 alle variabili
 
-        nitems.resize(nclasses);
-        values.resize(nclasses);
-        weights.resize(nclasses);
-        solution.resize(nclasses);
-        capacities.resize(nresources);
+        nitems.resize(nclasses); // attribuizione dimensione vettore numero di elementi
+        values.resize(nclasses); // attribuizione dimensione vettore dei valori
+        weights.resize(nclasses); // attribuizione dimensione vettore dei pesi
+        solution.resize(nclasses); // attribuizione dimensione vettore delle soluzioni
+        capacities.resize(nresources); // attribuizione dimensione vettore delle capacità
 
-        getline(newfile, line);
-        istringstream resources(line);
+        getline(newfile, line); // leggi prossima linea
+        istringstream resources(line); // line = x | x | x | ...  dove x è il valore della capacità letta
         for (auto i = 0; i < nresources; i++) {
-            resources >> capacities[i];
+            resources >> capacities[i]; // inserisce valori letti nell'array delle capacità
         }
 
         for (auto i = 0; i < nclasses; i++) {
-            solution[i] = 0;
-            getline(newfile, line);
-            istringstream isnitems(line);
-            isnitems >> nitems[i];
-            values[i].resize(nitems[i]);
-            weights[i].resize(nitems[i] * nresources);
+            solution[i] = 0; // imposta valore 0 come default
+            getline(newfile, line); // chiene nuova linea
+            istringstream isnitems(line); // line = x | x | x | ... dove x è il numero degli elementi contenuti nella classe [?] todo: check da file
+            isnitems >> nitems[i]; // inserisce valori letti nell'array del numero di elementi
+            values[i].resize(nitems[i]); // modifica la dimensione dell'array
+            weights[i].resize(nitems[i] * nresources);  // modicia dimensione dei pesi in modo da passare da una marice tridimensionale a un vettore
             for (auto j = 0; j < nitems[i]; j++) {
-                getline(newfile, line);
-                istringstream itemdata(line);
-                itemdata >> values[i][j];
+                getline(newfile, line); // legge prossima linea
+                istringstream itemdata(line); // line = x | x | x | ... dove x è il peso di ogni elemento
+                itemdata >> values[i][j]; // inserisce primo valore letto nell'array dei valori
                 for (auto z = 0; z < nresources; z++) {
-                    itemdata >> weights[i][j * nresources + z];
+                    itemdata >> weights[i][j * nresources + z]; // inserisce gli altri valori letti nell array dei pesi
                 }
             }
         }
-        newfile.close();
-        cout << "Done." << endl << endl;
+        newfile.close(); // chiusura file
+        cout << "Done." << endl << endl; // stampa a schermo
 
 #ifdef MYDEBUG
         // Print for debug purposes
