@@ -9,3 +9,12 @@ Run command 1
 
 Run command 2
 > timeout -s 2 1s ./mmkp -t 1 -i instance
+
+
+How to run everything step by step:
+1. Compile main
+2. Delete `std_stat_file.csv` and just to be sure the output folders too
+3. Run `./run_std.sh`
+4. Run `./verify_std.sh`
+5. Check result and cry
+

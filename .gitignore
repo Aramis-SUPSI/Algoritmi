@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Folders
+MMKP_GR04/out_standard/
+MMKP_GR04/out_fast/
+MMKP_GR04/out_large/
+MMKP_GR04/out_beast/
+
+# Files
+mmkp/std_stat_file.csv
