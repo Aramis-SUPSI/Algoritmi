@@ -18,3 +18,4 @@ How to run everything step by step:
 4. Run `./verify_std.sh`
 5. Check result and cry
 
+![](https://media.tenor.com/P3RqQUUK9BAAAAAd/rip-juice-cry.gif)
