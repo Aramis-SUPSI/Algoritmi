@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+        "-i",
+        "/home/flamy/Algoritmi/mmkp/Instances/standard/mmkp_c_23.txt",
+        "-t",
+        "60"
+      ],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/flamy/Algoritmi/mmkp/MMKP_GR04",
+      "program": "/home/flamy/Algoritmi/mmkp/MMKP_GR04/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

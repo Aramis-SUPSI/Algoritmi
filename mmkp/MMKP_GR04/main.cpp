@@ -10,6 +10,7 @@
 #include <csignal>
 #include <numeric>
 #include <algorithm>
+#include <map>
 
 
 char* getOption(int argc, char* argv[], const char* option)
@@ -36,6 +37,7 @@ int main(int argc, char *argv[]) {
     // register signal SIGINT and signal handler  
     signal(SIGINT, signalHandler); 
 
+    std::cout << argv << "\n";
     char* timelimit = getOption(argc, argv, std::string("-t").c_str());
     char* input = getOption(argc, argv, std::string("-i").c_str());
 
@@ -61,70 +63,52 @@ int main(int argc, char *argv[]) {
 
     std::vector<int> capacities_check(instance.nclasses);
     std::copy(instance.capacities.begin(), instance.capacities.end(), capacities_check.begin());
-    std::vector<std::vector<int>> items(instance.nclasses, std::vector<int>(instance.nitems.size()));
-    std::vector<std::vector<int>> weights_mean(instance.nclasses, std::vector<int>(instance.nitems.size()));
-    for (int i = 0; i < instance.nclasses; i++) {
-      for (int j = 0; j < instance.nitems[i]; j++) {
-        float sum = 0.0f;
-        for (auto z = 0; z < instance.nresources; z++) {
-          sum += instance.weights[i][j * instance.nresources + z];
-        }
-        const float mean = sum / (float)instance.nresources;
+    std::vector<int> classes(instance.nclasses);
 
-        items[i][j] = j;
-        weights_mean[i][j] = mean;
-      }
-      std::sort(items[i].begin(), items[i].end(), [&](int y, int t) {
-          return (float)instance.values[i][y] / weights_mean[i][y] > (float)instance.values[i][t] / weights_mean[i][t];
-      });
+    for(int i = 0; i < instance.nclasses; i++) {
+      classes[i] = i;
     }
 
-    for (int i = 0; i < instance.nclasses; i++) {
-      bool found = false;
-      for (int j = 0; j < instance.nitems[i]; j++) {
-        int item = items[i][j];
-        bool acceptable = true;
-        for (auto z = 0; z < instance.nresources; z++) {
-          if(!(capacities_check[z] >= instance.weights[i][j * instance.nresources + z])){
-            acceptable = false;
-            break;
-          }
-        }
-        if(acceptable){
-          instance.solution[i] = item;
-          
+    while(classes.size() > 0) {
+      int best_class_found = 0;
+      int best_item_found = 0;
+      float value_of_best = 0.0f;
+      for (int i = 0; i < classes.size(); i++) {
+        for (int j = 0; j < instance.nitems[classes[i]]; j++) {
+          float sum = 0.0f;
           for (auto z = 0; z < instance.nresources; z++) {
-            capacities_check[z] -=  instance.weights[i][j * instance.nresources + z];
+            if((float)capacities_check[z] - (float)instance.weights[classes[i]][j * instance.nresources + z] <= 0){
+              sum = 0.0f;
+              break;
+            } else{
+              sum += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f;
+            }
           }
-
-          found = true;
-          break;
+          float value;
+          if(sum != 0.0f){
+            value = (float)instance.values[classes[i]][j] / sum;
+          } else{
+            value = 0.0f;
+          }
+          
+          if(value > value_of_best){
+            best_class_found = i;
+            best_item_found = j;
+            value_of_best = value;
+          }
         }
       }
-      if(!found){
-        instance.solution[i] = 0;
+
+      instance.solution[classes[best_class_found]] = best_item_found;
+      for (auto z = 0; z < instance.nresources; z++) {
+        capacities_check[z] -= instance.weights[classes[best_class_found]][best_item_found * instance.nresources + z];
       }
+
+      classes.erase(classes.begin() + best_class_found);
+      
     }
 
-
-
-    /*    
-    std::vector<std::vector<float>> items_score;
-    items_score.resize(instance.nclasses);
-    
-    for (auto i = 0; i < instance.nclasses; i++) {
-      items_score[i].resize(instance.nitems[i]);
-      for (auto j = 0; j < instance.nitems[i]; j++) {
-        float sum = 0.0f;
-        for (auto z = 0; z < instance.nresources; z++) {
-          sum += instance.weights[i][j * instance.nresources + z];
-        }
-        const float weigths_mean = sum / (float)instance.nresources;
-        const float value_over_weigths_mean = (float)instance.values[i][j] / weigths_mean;
-        items_score[i][j] = value_over_weigths_mean;
-      }
-    }*/
-    
+    //End
 
     std::ofstream outfile;
     outfile.open(output, std::ios_base::out);
