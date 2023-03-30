@@ -70,15 +70,22 @@ int main(int argc, char *argv[]) {
       classes[i] = i;
     }
 
+    //Start
+    // until all classes are used, keep choosing the best item
     while(classes.size() > 0) {
+      //keep track of the best item found so far
       int best_class_found = 0;
       int best_item_found = 0;
+
       float value_of_best = 0.0f;
+
+
       for (int i = 0; i < classes.size(); i++) {
         for (int j = 0; j < instance.nitems[classes[i]]; j++) {
           float sum = 0.0f;
           float sum_best = 0.0f; 
           for (auto z = 0; z < instance.nresources; z++) {
+              // if the item is too heavy, skip it
             if((float)capacities_check[z] - (float)instance.weights[classes[i]][j * instance.nresources + z] <= 0){
               sum = 0.0f;
               sum_best = 0.0f;
@@ -89,6 +96,8 @@ int main(int argc, char *argv[]) {
               sum_best += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * pow(((float)instance.capacities[z] - (float)capacities_check[z]) / (float)instance.capacities[z], 2.0f);
             }
           }
+
+
           float value;
           if(sum != 0.0f){
             value = (float)instance.values[classes[i]][j] / sum - sum;
