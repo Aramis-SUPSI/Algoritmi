@@ -11,6 +11,7 @@
 #include <numeric>
 #include <algorithm>
 #include <map>
+#include <math.h>
 
 
 char* getOption(int argc, char* argv[], const char* option)
@@ -76,17 +77,21 @@ int main(int argc, char *argv[]) {
       for (int i = 0; i < classes.size(); i++) {
         for (int j = 0; j < instance.nitems[classes[i]]; j++) {
           float sum = 0.0f;
+          float sum_best = 0.0f; 
           for (auto z = 0; z < instance.nresources; z++) {
             if((float)capacities_check[z] - (float)instance.weights[classes[i]][j * instance.nresources + z] <= 0){
               sum = 0.0f;
+              sum_best = 0.0f;
               break;
             } else{
-              sum += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f;
+              //peso_occupato / peso rimanente + peso_tot_occupato / peso_tot
+              sum += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * pow(((float)instance.capacities[z] - (float)capacities_check[z]) / (float)instance.capacities[z], 2.0f);
+              sum_best += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * pow(((float)instance.capacities[z] - (float)capacities_check[z]) / (float)instance.capacities[z], 2.0f);
             }
           }
           float value;
           if(sum != 0.0f){
-            value = (float)instance.values[classes[i]][j] / sum;
+            value = (float)instance.values[classes[i]][j] / sum - sum;
           } else{
             value = 0.0f;
           }
