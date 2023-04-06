@@ -42,3 +42,5 @@
 
 # Files
 mmkp/std_stat_file.csv
+/CMakeLists.txt
+/cmake-build-debug/
