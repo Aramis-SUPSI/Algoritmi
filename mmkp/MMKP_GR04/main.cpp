@@ -156,6 +156,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    float max_occup = 0.0f;
+    for (int i = 0; i < instance.nresources; i++) {
+        float occup = (float)instance.capacities[i] - (float)capacities_check[i];
+        occup /= (float)instance.capacities[i];
+        if(occup > max_occup){
+            max_occup = occup;
+        }
+    }
+
     int cnt = 50;
     while (cnt>0) {
         for (int i = 0; i < neighbors; i++) {
@@ -184,14 +193,24 @@ int main(int argc, char *argv[]) {
             newMaxValue += instance.values[rndClass][rndItem];
 
             //check remaining weight of this solution
-            int remainingWeight = 0;
+            int remainingWeight_local = 0;
             for (int i = 0; i < instance.nresources; i++) {
-                remainingWeight += capacities_check_local[i];
+                remainingWeight_local += capacities_check_local[i];
+            }
+
+            //check highest occupied weight % of this solution
+            float max_occup_local = 0.0f;
+            for (int i = 0; i < instance.nresources; i++) {
+                float occup = (float)instance.capacities[i] - (float)capacities_check_local[i];
+                occup /= (float)instance.capacities[i];
+                if(occup > max_occup_local){
+                    max_occup_local = occup;
+                }
             }
 
             neighborhoodValues[i][0] = acceptable;
             neighborhoodValues[i][1] = newMaxValue;
-            neighborhoodValues[i][2] = remainingWeight;
+            neighborhoodValues[i][2] = remainingWeight_local;
             neighborhoodWeights[i] = capacities_check_local;
         }
 
@@ -200,6 +219,12 @@ int main(int argc, char *argv[]) {
                     (is_feasible && (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue)) ||
                             (!is_feasible && (neighborhoodValues[i][0] || neighborhoodValues[i][2] >= remainingWeight))
             ) {
+
+                //if solution is not feasible, only accept it if it is feasible and has a higher value or the same value but a lower remaining weight
+                /*if(!(!is_feasible && !neighborhoodValues[i][0] && neighborhoodValues[i][2] == remainingWeight && neighborhoodValues[i][1] >= maxValue)) {
+                    continue;
+                }*/
+
                 std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
                 std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
                 remainingWeight = neighborhoodValues[i][2];
