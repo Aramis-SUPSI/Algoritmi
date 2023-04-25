@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < neighbors; i++) {
             if (
                     (is_feasible && (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue)) ||
-                            (!is_feasible && (neighborhoodValues[i][0] || neighborhoodValues[i][2] > remainingWeight))
+                            (!is_feasible && (neighborhoodValues[i][0] || neighborhoodValues[i][2] >= remainingWeight))
             ) {
                 std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
                 std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
