@@ -1,0 +1,3 @@
+C:/Users/Alexa Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp_verifier/cmake-build-debug/CMakeFiles/Algoritmi.dir
+C:/Users/Alexa Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp_verifier/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Alexa Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp_verifier/cmake-build-debug/CMakeFiles/rebuild_cache.dir

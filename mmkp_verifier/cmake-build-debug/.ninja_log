@@ -1,0 +1,12 @@
+# ninja log v5
+1	147	7005010945576605	build.ninja	7cb9686ad093fefd
+0	336	7005007721732155	CMakeFiles/Algoritmi.dir/main.cpp.obj	426f8be271af5374
+3	386	7005010549874310	CMakeFiles/Algoritmi.dir/C_/Users/Alexa_Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp/MMKP_GR04/data.cpp.obj	66ab6da65ffb862e
+387	496	7005010550931030	Algoritmi.exe	da48d1b557a047cd
+1	400	7005009887602660	CMakeFiles/Algoritmi.dir/C_/Users/Alexa_Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp/MMKP_GR04/main.cpp.obj	c502ceab18a501f5
+3	900	7018634576717356	CMakeFiles/Algoritmi.dir/C_/Users/Alexa_Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp/MMKP_GR04/main.cpp.obj	c502ceab18a501f5
+902	1192	7018634579566924	Algoritmi.exe	da48d1b557a047cd
+3	509	7018653718298262	CMakeFiles/Algoritmi.dir/C_/Users/Alexa_Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp/MMKP_GR04/main.cpp.obj	c502ceab18a501f5
+510	671	7018653719841220	Algoritmi.exe	da48d1b557a047cd
+5	1528	7038724110035716	CMakeFiles/Algoritmi.dir/C_/Users/Alexa_Falce/Documents/SUPSI/Algoritmi/Progetto/Algoritmi/mmkp/MMKP_GR04/main.cpp.obj	c502ceab18a501f5
+1529	2046	7038724115151664	Algoritmi.exe	da48d1b557a047cd
