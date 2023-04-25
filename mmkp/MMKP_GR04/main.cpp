@@ -12,6 +12,9 @@
 #include <algorithm>
 #include <map>
 #include <math.h>
+#include <vector>
+#include <random>
+#include <chrono>
 
 
 char* getOption(int argc, char* argv[], const char* option)
@@ -123,6 +126,66 @@ int main(int argc, char *argv[]) {
     }
 
     //End
+    int maxValue;
+    int neighbors = 10;
+    std::vector<std::vector<int>> neighborhood(neighbors, std::vector<int>(instance.nitems.size()));
+    std::vector<std::vector<int>> neighborhoodWeights(neighbors, std::vector<int>(instance.nresources));
+    std::vector<std::vector<int>> neighborhoodValues(neighbors, std::vector<int>(2));
+
+    std::srand(std::time(nullptr));
+
+
+    for (int i = 0; i < instance.solution.size(); i++) {
+        maxValue += instance.values[i][instance.solution[i]];
+    }
+
+    int cnt = 10;
+    while (cnt>0) {
+
+
+        for (int i = 0; i < neighbors; i++) {
+            int newMaxValue = maxValue;
+            std::copy(instance.solution.begin(), instance.solution.end(), neighborhood[i].begin());
+
+            //local copy of capacities
+            std::vector<int> capacities_check_local(instance.nclasses);
+            std::copy(capacities_check.begin(), capacities_check.end(), capacities_check_local.begin());
+
+            int rndClass = std::rand() % instance.nclasses;
+            int rndItem = std::rand()%instance.nitems[rndClass];
+            neighborhood[i][rndClass] = rndItem;
+
+            bool acceptable = true;
+            for (auto z = 0; z < instance.nresources; z++) {
+                capacities_check_local[z] += instance.weights[rndClass][instance.solution[rndClass] * instance.nresources + z];
+                if (capacities_check_local[z] < instance.weights[rndClass][rndItem * instance.nresources + z]) {
+                    acceptable = false;
+                    break;
+                }
+
+                capacities_check_local[z] -= instance.weights[rndClass][rndItem * instance.nresources + z];
+            }
+
+            if (acceptable) {
+                newMaxValue -= instance.values[rndClass][instance.solution[rndClass]];
+                newMaxValue += instance.values[rndClass][rndItem];
+            }
+
+            neighborhoodValues[i][0] = acceptable;
+            neighborhoodValues[i][1] = newMaxValue;
+            neighborhoodWeights[i] = capacities_check_local;
+        }
+
+        for (int i = 0; i < neighbors; i++) {
+            if (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue) {
+                std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
+                std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
+                maxValue = neighborhoodValues[i][1];
+            }
+        }
+
+        cnt --;
+    }
 
     std::ofstream outfile;
     outfile.open(output, std::ios_base::out);
