@@ -128,21 +128,34 @@ int main(int argc, char *argv[]) {
     //End
     int maxValue;
     int neighbors = 10;
+    int remainingWeight;
+    bool is_feasible;
+
     std::vector<std::vector<int>> neighborhood(neighbors, std::vector<int>(instance.nitems.size()));
     std::vector<std::vector<int>> neighborhoodWeights(neighbors, std::vector<int>(instance.nresources));
-    std::vector<std::vector<int>> neighborhoodValues(neighbors, std::vector<int>(2));
+    std::vector<std::vector<int>> neighborhoodValues(neighbors, std::vector<int>(3));
 
     std::srand(std::time(nullptr));
 
+    //calculate remaining weight
+    for (int i = 0; i < instance.nresources; i++) {
+        remainingWeight += capacities_check[i];
+    }
 
     for (int i = 0; i < instance.solution.size(); i++) {
         maxValue += instance.values[i][instance.solution[i]];
     }
 
-    int cnt = 10;
+    //check if solution is feasible
+    is_feasible = true;
+    for (int i = 0; i < instance.nresources; i++) {
+        if (capacities_check[i] < 0) {
+            is_feasible = false;
+        }
+    }
+
+    int cnt = 50;
     while (cnt>0) {
-
-
         for (int i = 0; i < neighbors; i++) {
             int newMaxValue = maxValue;
             std::copy(instance.solution.begin(), instance.solution.end(), neighborhood[i].begin());
@@ -160,27 +173,36 @@ int main(int argc, char *argv[]) {
                 capacities_check_local[z] += instance.weights[rndClass][instance.solution[rndClass] * instance.nresources + z];
                 if (capacities_check_local[z] < instance.weights[rndClass][rndItem * instance.nresources + z]) {
                     acceptable = false;
-                    break;
                 }
 
                 capacities_check_local[z] -= instance.weights[rndClass][rndItem * instance.nresources + z];
             }
 
-            if (acceptable) {
-                newMaxValue -= instance.values[rndClass][instance.solution[rndClass]];
-                newMaxValue += instance.values[rndClass][rndItem];
+            newMaxValue -= instance.values[rndClass][instance.solution[rndClass]];
+            newMaxValue += instance.values[rndClass][rndItem];
+
+            //check remaining weight of this solution
+            int remainingWeight = 0;
+            for (int i = 0; i < instance.nresources; i++) {
+                remainingWeight += capacities_check_local[i];
             }
 
             neighborhoodValues[i][0] = acceptable;
             neighborhoodValues[i][1] = newMaxValue;
+            neighborhoodValues[i][2] = remainingWeight;
             neighborhoodWeights[i] = capacities_check_local;
         }
 
         for (int i = 0; i < neighbors; i++) {
-            if (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue) {
+            if (
+                    (is_feasible && (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue)) ||
+                            (!is_feasible && (neighborhoodValues[i][0] || neighborhoodValues[i][2] > remainingWeight))
+            ) {
                 std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
                 std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
+                remainingWeight = neighborhoodValues[i][2];
                 maxValue = neighborhoodValues[i][1];
+                is_feasible = neighborhoodValues[i][0];
             }
         }
 
