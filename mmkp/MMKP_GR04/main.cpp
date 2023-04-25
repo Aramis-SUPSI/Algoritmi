@@ -86,17 +86,19 @@ int main(int argc, char *argv[]) {
       for (int i = 0; i < classes.size(); i++) {
         for (int j = 0; j < instance.nitems[classes[i]]; j++) {
           float sum = 0.0f;
-          float sum_best = 0.0f; 
           for (auto z = 0; z < instance.nresources; z++) {
               // if the item is too heavy, skip it
             if((float)capacities_check[z] - (float)instance.weights[classes[i]][j * instance.nresources + z] <= 0){
               sum = 0.0f;
-              sum_best = 0.0f;
               break;
             } else{
               //peso_occupato / peso rimanente + peso_tot_occupato / peso_tot
-              sum += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * pow(((float)instance.capacities[z] - (float)capacities_check[z]) / (float)instance.capacities[z], 2.0f);
-              sum_best += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * pow(((float)instance.capacities[z] - (float)capacities_check[z]) / (float)instance.capacities[z], 2.0f);
+              float cap_inv = 1.0f / (float)instance.capacities[z];
+              float cap_check = (float)capacities_check[z];
+              float cap_diff = cap_check - (float)instance.capacities[z];
+              float cap_diff_sq = cap_diff * cap_diff;
+
+              sum += (float)instance.weights[classes[i]][j * instance.nresources + z] / (float)capacities_check[z] * 100.0f * cap_diff_sq * cap_inv * cap_inv;
             }
           }
 
