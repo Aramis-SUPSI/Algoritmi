@@ -155,6 +155,11 @@ int main(int argc, char *argv[]) {
     int remainingWeight;
     bool is_feasible;
 
+    //Simulated Annealing
+    int temperature = 100;
+    double alpha = 0.9f;
+
+
     std::vector<std::vector<int>> neighborhood(neighbors, std::vector<int>(instance.solution.size()));
     std::vector<std::vector<int>> neighborhoodWeights(neighbors, std::vector<int>(instance.nresources));
     std::vector<std::vector<int>> neighborhoodValues(neighbors, std::vector<int>(3));
@@ -197,6 +202,11 @@ int main(int argc, char *argv[]) {
 
     int cnt = 500;
     while (cnt>0) {
+        //drop temperature after 10 iterations
+        if (cnt % 50 == 0) {
+            temperature *= alpha;
+        }
+
         for (int i = 0; i < neighbors; i++) {
 
             int newMaxValue = maxValue;
@@ -219,10 +229,12 @@ int main(int argc, char *argv[]) {
             int rndItem;
             //if the class has two items, swap them
             if (instance.nitems[rndClass] == 2) {
-                int tmp = neighborhood[i][rndClass];
+                neighborhood[i][rndClass] = (instance.solution[rndClass] + 1) % 2;
+                rndItem = neighborhood[i][rndClass];
+                /*int tmp = neighborhood[i][rndClass];
                 neighborhood[i][rndClass] = (neighborhood[i][rndClass] + 1) % 2;
-                neighborhood[i][(rndClass + 1) % instance.solution.size()] = tmp;
-                continue;
+                neighborhood[i][(rndClass + 1) % instance.solution.size()] = tmp;*/
+
             }else {
                 //if the class has more than two items, swap a random item with another random item
                 while ((rndItem = std::rand() % instance.nitems[rndClass]) == instance.solution[rndClass]);
@@ -269,19 +281,21 @@ int main(int argc, char *argv[]) {
             //std::copy(capacities_check_local.begin(), capacities_check_local.end(), neighborhoodWeights[i].begin());
             //print instance.solution
             //std::cout << "current solution: " << std::endl;
-            for (int i = 0; i < instance.solution.size(); i++) {
+            //for (int i = 0; i < instance.solution.size(); i++) {
                 //std::cout << instance.solution[i] << ' ';
-            }
+            //}
 
             //print neighborhood[i]
             //std::cout << "\nneighborhood[" << i << "]: " << std::endl;
-            for (int j = 0; j < neighborhood[i].size(); j++) {
+            //for (int j = 0; j < neighborhood[i].size(); j++) {
                 //std::cout << neighborhood[i][j] << ' ';
-            }
+            //}
             //std::cout << std::endl;
         }
 
         for (int i = 0; i < neighbors; i++) {
+
+            //if the neighbor is better, accept it
             if (
                     ((is_feasible && (neighborhoodValues[i][0] && neighborhoodValues[i][1] > maxValue)) ||
                             //(!is_feasible && !neighborhoodValues[i][0] && neighborhoodValues[i][2] == remainingWeight && neighborhoodValues[i][1] >= maxValue) ||
@@ -304,6 +318,20 @@ int main(int argc, char *argv[]) {
                 remainingWeight = neighborhoodValues[i][2];
                 maxValue = neighborhoodValues[i][1];
                 is_feasible = neighborhoodValues[i][0];
+            }
+            //chance to accept worse solution via simulated annealing, only if temperature > 0 and the new solution is feasible
+            else if (neighborhoodValues[i][0] && temperature > 0 && std::rand() % 100 < 100 * std::exp((maxValue - neighborhoodValues[i][1]) / temperature)) {
+                //std::cout << "worse solution accepted" << std::endl;
+                //std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
+                //std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
+                instance.solution = neighborhood[i];
+                capacities_check = neighborhoodWeights[i];
+
+                remainingWeight = neighborhoodValues[i][2];
+                maxValue = neighborhoodValues[i][1];
+                is_feasible = neighborhoodValues[i][0];
+
+                break;
             }
         }
 
