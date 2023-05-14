@@ -200,10 +200,10 @@ int main(int argc, char *argv[]) {
 
     //std::cout << "feasible: " << is_feasible << "\n";
 
-    int cnt = 500;
+    int cnt = 700;
     while (cnt>0) {
         //drop temperature after 10 iterations
-        if (cnt % 50 == 0) {
+        if (cnt >= 400 && cnt % 50 == 0) {
             temperature *= alpha;
         }
 
@@ -320,7 +320,7 @@ int main(int argc, char *argv[]) {
                 is_feasible = neighborhoodValues[i][0];
             }
             //chance to accept worse solution via simulated annealing, only if temperature > 0 and the new solution is feasible
-            else if (neighborhoodValues[i][0] && temperature > 0 && std::rand() % 100 < 100 * std::exp((maxValue - neighborhoodValues[i][1]) / temperature)) {
+            else if (cnt >= 400 && neighborhoodValues[i][0] && temperature > 0 && std::rand() % 100 < 100 * std::exp((maxValue - neighborhoodValues[i][1]) / temperature)) {
                 //std::cout << "worse solution accepted" << std::endl;
                 //std::copy(neighborhood[i].begin(), neighborhood[i].end(), instance.solution.begin());
                 //std::copy(neighborhoodWeights[i].begin(), neighborhoodWeights[i].end(), capacities_check.begin());
